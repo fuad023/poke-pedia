@@ -1,4 +1,4 @@
-CREATE TABLE Admin (
+CREATE TABLE users (
     id                BIGINT          NOT NULL IDENTITY(1,1),
 
     name              VARCHAR(64)     NOT NULL,
@@ -11,8 +11,8 @@ CREATE TABLE Admin (
     created_at        DATETIME            NULL DEFAULT NULL,
     updated_at        DATETIME            NULL DEFAULT NULL,
 
-    CONSTRAINT PK_Admin       PRIMARY KEY (id),
-    CONSTRAINT UQ_Admin_email UNIQUE      (email)
+    CONSTRAINT PK_users       PRIMARY KEY (id),
+    CONSTRAINT UQ_users_email UNIQUE      (email)
 );
 
-CREATE INDEX IDX_Admin_name ON Admin (first_name, last_name);
+CREATE INDEX IDX_users_name ON users (name);

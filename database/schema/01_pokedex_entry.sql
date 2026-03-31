@@ -1,13 +1,13 @@
-CREATE TABLE PokedexEntry (
+CREATE TABLE pokedex_entry (
     id               TINYINT           NOT NULL,
     flavour_text     VARCHAR(128)      NOT NULL,
 
-    CONSTRAINT PK_PokedexEntry PRIMARY KEY (id)
+    CONSTRAINT PK_pe PRIMARY KEY (id)
 );
 
 -- =============================================================
 
-INSERT INTO PokedexEntry VALUES
+INSERT INTO pokedex_entry VALUES
 (  1, 'A strange seed was planted on its back at birth. The plant sprouts and grows with this POKéMON.'),
 (  2, 'When the bulb on its back grows large, it appears to lose the ability to stand on its hind legs.'),
 (  3, 'Its plant blooms when it is absorbing solar energy. It stays on the move to seek sunlight.'),

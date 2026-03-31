@@ -1,22 +1,22 @@
-CREATE TABLE GrowthRate (
+CREATE TABLE growth_rates (
     id               TINYINT           NOT NULL,
     name             VARCHAR(16)       NOT NULL,
 
-    CONSTRAINT PK_GrowthRate PRIMARY KEY (id),
-    CONSTRAINT UQ_GrowthRate_name UNIQUE (name)
+    CONSTRAINT PK_gr PRIMARY KEY (id),
+    CONSTRAINT UQ_gr_name UNIQUE (name)
 );
 
-CREATE INDEX IDX_GrowthRate_name ON GrowthRate (name);
+CREATE INDEX IDX_gr_name ON growth_rates (name);
 
 GO
 
-CREATE PROCEDURE GetGrowthRateId
+CREATE PROCEDURE get_growth_rate_id
     @p_name VARCHAR(16),
     @v_id   TINYINT OUTPUT
 AS
 BEGIN
     SELECT @v_id = id
-    FROM GrowthRate
+    FROM growth_rates
     WHERE name = @p_name;
 
     IF @v_id IS NULL
@@ -29,7 +29,7 @@ END
 
 GO
 
-INSERT INTO GrowthRate (id, name) VALUES
+INSERT INTO growth_rates (id, name) VALUES
 (1, 'Fast'),
 (2, 'Medium Fast'),
 (3, 'Medium Slow'),
@@ -39,25 +39,25 @@ INSERT INTO GrowthRate (id, name) VALUES
 
 -- =============================================================
 
-CREATE TABLE Habitat (
+CREATE TABLE habitats (
     id               TINYINT           NOT NULL,
     name             VARCHAR(16)       NOT NULL,
 
-    CONSTRAINT PK_Habitat PRIMARY KEY (id),
-    CONSTRAINT UQ_Habitat_name UNIQUE (name)
+    CONSTRAINT PK_habitats PRIMARY KEY (id),
+    CONSTRAINT UQ_habitats_name UNIQUE (name)
 );
 
-CREATE INDEX IDX_Habitat_name ON Habitat (name);
+CREATE INDEX IDX_habitats_name ON habitats (name);
 
 GO
 
-CREATE PROCEDURE GetHabitatId
+CREATE PROCEDURE get_habitat_id
     @p_name VARCHAR(16),
     @v_id   TINYINT OUTPUT
 AS
 BEGIN
     SELECT @v_id = id
-    FROM Habitat
+    FROM habitats
     WHERE name = @p_name;
 
     IF @v_id IS NULL
@@ -70,7 +70,7 @@ END
 
 GO
 
-INSERT INTO Habitat (id, name) VALUES
+INSERT INTO habitats (id, name) VALUES
 (1, 'Grassland'),
 (2, 'Forest'),
 (3, 'Water''s-edge'),
@@ -83,25 +83,25 @@ INSERT INTO Habitat (id, name) VALUES
 
 -- =============================================================
 
-CREATE TABLE Item (
+CREATE TABLE items (
     id               TINYINT           NOT NULL,
     name             VARCHAR(16)       NOT NULL,
 
-    CONSTRAINT PK_Item PRIMARY KEY (id),
-    CONSTRAINT UQ_Item_name UNIQUE (name)
+    CONSTRAINT PK_items PRIMARY KEY (id),
+    CONSTRAINT UQ_items_name UNIQUE (name)
 );
 
-CREATE INDEX IDX_Item_name ON Item (name);
+CREATE INDEX IDX_items_name ON items (name);
 
 GO
 
-CREATE PROCEDURE GetItemId
+CREATE PROCEDURE get_item_name
     @p_name VARCHAR(16),
     @v_id   TINYINT OUTPUT
 AS
 BEGIN
     SELECT @v_id = id
-    FROM Item
+    FROM items
     WHERE name = @p_name;
 
     IF @v_id IS NULL
@@ -114,7 +114,7 @@ END
 
 GO
 
-INSERT INTO Item (id, name) VALUES
+INSERT INTO items (id, name) VALUES
 (1, 'Fire Stone'),
 (2, 'Water Stone'),
 (3, 'Thunder Stone'),
