@@ -7,12 +7,11 @@ use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 
-class RegisteredUserController extends Controller
+class RegisterController extends Controller
 {
     /**
      * Handle an incoming registration request.
@@ -22,9 +21,9 @@ class RegisteredUserController extends Controller
     public function store(Request $request): Response
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'name'     => ['required', 'string', 'max:64'],
+            'email'    => ['required', 'string', 'max:64', 'lowercase', 'email', 'unique:'.User::class],
+            'password' => ['required', 'string', 'max:64', 'confirmed', Rules\Password::defaults()],
         ]);
 
         $user = User::create([
@@ -35,7 +34,7 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        Auth::login($user);
+        // Auth::login($user);
 
         return response()->noContent();
     }
