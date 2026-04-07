@@ -95,7 +95,7 @@ CREATE INDEX IDX_items_name ON items (name);
 
 GO
 
-CREATE PROCEDURE get_item_name
+CREATE PROCEDURE get_item_id
     @p_name VARCHAR(16),
     @v_id   TINYINT OUTPUT
 AS
