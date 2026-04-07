@@ -29,7 +29,7 @@ To clone the repo
 To prepare the database (Dockerized Microsoft SQL Server)
 - `docker compose pull sqlserver`
 - `docker compose up sqlserver`
-- `./db-poke-pedia.sh`
+- `./init_db.sh`
 
 To start the server
 - `cd server`
