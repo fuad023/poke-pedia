@@ -204,42 +204,6 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     return;
   }
 
-  try {
-    const response = await fetch("http://127.0.0.1:8000/api/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        password: formData.password,
-        confirmPassword: formData.confirmPassword,
-      }),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      if (data.errors) {
-        setErrors({
-          name: data.errors.name?.[0] || "",
-          email: data.errors.email?.[0] || "",
-          phone: data.errors.phone?.[0] || "",
-          password: data.errors.password?.[0] || "",
-          confirmPassword: data.errors.confirmPassword?.[0] || "",
-        });
-      }
-      return;
-    }
-
-    alert("Signup successful");
-  } catch (error) {
-    console.error(error);
-    alert("Server error");
-  }
 };
 
   return (

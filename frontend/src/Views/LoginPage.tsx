@@ -159,55 +159,6 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     return;
   }
 
-  try {
-    const response = await fetch("http://127.0.0.1:8000/api/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({
-        email: loginData.email,
-        password: loginData.password,
-      }),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      if (data.errors) {
-        setErrors({
-          email: data.errors.email?.[0] || "",
-          password: data.errors.password?.[0] || "",
-        });
-      } else {
-        alert(data.message || "Login failed");
-      }
-      return;
-    }
-
-    localStorage.setItem(
-      "authUser",
-      JSON.stringify({
-        id: data.user.id,
-        name: data.user.name,
-        email: data.user.email,
-      })
-    );
-
-    if (loginData.remember) {
-      localStorage.setItem("rememberedEmail", loginData.email);
-      localStorage.setItem("rememberMe", "true");
-    } else {
-      localStorage.removeItem("rememberedEmail");
-      localStorage.removeItem("rememberMe");
-    }
-
-    navigate("/welcome");
-  } catch (error) {
-    console.error(error);
-    alert("Server error");
-  }
 };
 
   return (
