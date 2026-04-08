@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import "../Style/PokemonDetailsPage.css";
 
 type Stat = {
@@ -44,6 +45,7 @@ type PokemonType = {
   subtitle: string;
   pokemonId: number;
   mainImage: string;
+  theme: ThemeType;
   pokedexData: InfoItem[];
   training: InfoItem[];
   stats: Stat[];
@@ -51,92 +53,72 @@ type PokemonType = {
   entries: PokedexEntry[];
 };
 
-const theme: ThemeType = {
-  bodyBackground:
-    "linear-gradient(135deg, #e8fff1 0%, #d8f6e7 45%, #eefbf3 100%)",
-  accent: "#2f9e44",
-  accentSoft: "#69db7c",
-  secondary: "#4dabf7",
-  titleColor: "#16351f",
-  textColor: "#334155",
-  cardBackground: "rgba(255, 255, 255, 0.88)",
-  hoverShadow: "rgba(47, 158, 68, 0.22)",
-  statNumberColor: "#2f9e44",
-  statBarGradient:
-    "linear-gradient(90deg, #2f9e44 0%, #69db7c 50%, #4dabf7 100%)",
-  sectionLineGradient:
-    "linear-gradient(90deg, #2f9e44 0%, #4dabf7 100%)",
-  entryVersionColor: "#1971c2",
-};
-
-const pokemon: PokemonType = {
-  name: "Bulbasaur",
-  subtitle: "Seed Pokémon · Grass / Poison",
-  pokemonId: 1,
-  mainImage: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/001.png",
-  pokedexData: [
-    { label: "National No.", value: "0001" },
-    { label: "Species", value: "Seed Pokémon" },
-    { label: "Type", value: "Grass / Poison" },
-    { label: "Height", value: "0.7 m (2′04″)" },
-    { label: "Weight", value: "6.9 kg (15.2 lbs)" },
-    { label: "Abilities", value: "Overgrow, Chlorophyll" },
-  ],
-  training: [
-    { label: "EV Yield", value: "1 Sp. Atk" },
-    { label: "Catch Rate", value: "45" },
-    { label: "Base Friendship", value: "50" },
-    { label: "Growth Rate", value: "Medium Slow" },
-  ],
-  stats: [
-    { label: "HP", value: 45, max: 255 },
-    { label: "Attack", value: 49, max: 255 },
-    { label: "Defense", value: 49, max: 255 },
-    { label: "Sp. Atk", value: 65, max: 255 },
-    { label: "Sp. Def", value: 65, max: 255 },
-    { label: "Speed", value: 45, max: 255 },
-  ],
-  evolutions: [
-    {
-      id: 1,
-      name: "Bulbasaur",
-      image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/001.png",
-    },
-    {
-      id: 2,
-      name: "Ivysaur",
-      level: "Level 16",
-      image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/002.png",
-    },
-    {
-      id: 3,
-      name: "Venusaur",
-      level: "Level 32",
-      image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/003.png",
-    },
-  ],
-  entries: [
-    {
-      version: "Red / Blue",
-      text: "A strange seed was planted on its back at birth. The plant sprouts and grows with this Pokémon.",
-    },
-  ],
-};
-
 const PokemonDetailsPage: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+
+  const [pokemon, setPokemon] = useState<PokemonType | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
+
+  useEffect(() => {
+    const loadPokemon = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        if (!id) {
+          throw new Error("Pokemon ID not found in route");
+        }
+
+        const response = await fetch(`http://127.0.0.1:8000/api/pokemon/${id}`, {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+          },
+        });
+
+        const rawText = await response.text();
+        console.log("HTTP status:", response.status);
+        console.log("Raw response:", rawText);
+
+        if (!response.ok) {
+          throw new Error(`Backend error ${response.status}: ${rawText}`);
+        }
+
+        const data: PokemonType = JSON.parse(rawText);
+        setPokemon(data);
+      } catch (err) {
+        console.error("Fetch error:", err);
+        setError(err instanceof Error ? err.message : "Could not load pokemon data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPokemon();
+  }, [id]);
+
+  if (loading) {
+    return <div className="pokemon-loading">Loading...</div>;
+  }
+
+  if (error || !pokemon) {
+    return <div className="pokemon-error">{error || "No data found"}</div>;
+  }
+
   const themeStyle = {
-    "--body-bg": theme.bodyBackground,
-    "--accent": theme.accent,
-    "--accent-soft": theme.accentSoft,
-    "--secondary": theme.secondary,
-    "--title-color": theme.titleColor,
-    "--text-color": theme.textColor,
-    "--card-bg": theme.cardBackground,
-    "--hover-shadow": theme.hoverShadow,
-    "--stat-number-color": theme.statNumberColor,
-    "--stat-bar-gradient": theme.statBarGradient,
-    "--section-line-gradient": theme.sectionLineGradient,
-    "--entry-version-color": theme.entryVersionColor,
+    "--body-bg": pokemon.theme.bodyBackground,
+    "--accent": pokemon.theme.accent,
+    "--accent-soft": pokemon.theme.accentSoft,
+    "--secondary": pokemon.theme.secondary,
+    "--title-color": pokemon.theme.titleColor,
+    "--text-color": pokemon.theme.textColor,
+    "--card-bg": pokemon.theme.cardBackground,
+    "--hover-shadow": pokemon.theme.hoverShadow,
+    "--stat-number-color": pokemon.theme.statNumberColor,
+    "--stat-bar-gradient": pokemon.theme.statBarGradient,
+    "--section-line-gradient": pokemon.theme.sectionLineGradient,
+    "--entry-version-color": pokemon.theme.entryVersionColor,
   } as React.CSSProperties;
 
   return (

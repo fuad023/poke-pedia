@@ -294,18 +294,34 @@ class PokemonController extends Controller
                     $chainList = [];
                     $this->flattenEvolutionChain($chainResponse->json()['chain'] ?? [], $chainList);
 
-                    foreach ($chainList as $index => $evolution) {
+                    $safeOrder = 1;
+
+                    foreach ($chainList as $evolution) {
+                        $targetId = (int) ($evolution['id'] ?? 0);
+
+                        if ($targetId <= 0) {
+                            continue;
+                        }
+
+                        $targetExists = DB::table('pokemon')
+                            ->where('id', $targetId)
+                            ->exists();
+
+                        if (!$targetExists) {
+                            continue;
+                        }
+
                         DB::table('pokemon_evolutions')->insert([
                             'pokemon_id'           => $pokemonId,
-                            'evolution_order'      => $index + 1,
-                            'evolution_pokemon_id' => $evolution['id'],
+                            'evolution_order'      => $safeOrder++,
+                            'evolution_pokemon_id' => $targetId,
                             'evolution_level'      => $evolution['level'],
                         ]);
 
                         DB::table('pokemon_images')->updateOrInsert(
-                            ['pokemon_id' => $evolution['id']],
+                            ['pokemon_id' => $targetId],
                             [
-                                'image_url' => "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{$evolution['id']}.png"
+                                'image_url' => "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{$targetId}.png"
                             ]
                         );
                     }

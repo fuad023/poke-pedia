@@ -58,7 +58,7 @@ const DEFAULT_MIN_MAX = {
 const getPokemonImage = (id: number) =>
   `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
 
-const getPokemonLink = (id: number) => `https://www.pokemon.com/us/pokedex/${id}`;
+const getPokemonLink = (id: number) => `/pokemon/${id}`;
 
 const formatDexId = (id: number) => String(id).padStart(3, "0");
 
@@ -104,8 +104,6 @@ export default function PokemonModernTable() {
         setLoading(true);
         setError("");
 
-        // Change this URL to your Laravel / PHP backend endpoint
-        // Example: http://127.0.0.1:8000/api/pokemon
         const res = await fetch("http://127.0.0.1:8000/api/pokemon", {
           headers: {
             Accept: "application/json",
@@ -117,8 +115,6 @@ export default function PokemonModernTable() {
         }
 
         const data = await res.json();
-
-        // Support either direct array OR { data: [...] }
         const rows: Pokemon[] = Array.isArray(data) ? data : data.data ?? [];
 
         setPokemon(rows);
