@@ -94,9 +94,6 @@ const LoginPage: React.FC = () => {
   const [errors, setErrors] = useState<LoginErrorsType>({});
   const navigate = useNavigate();
 
-  /* ─────────────────────────────────────────────────────────
-     Load remembered email when page opens
-  ───────────────────────────────────────────────────────── */
   useEffect(() => {
     const savedEmail = localStorage.getItem("rememberedEmail");
     const savedRemember = localStorage.getItem("rememberMe");
@@ -110,9 +107,6 @@ const LoginPage: React.FC = () => {
     }
   }, []);
 
-  /* ─────────────────────────────────────────────────────────
-     Handle input change
-  ───────────────────────────────────────────────────────── */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
 
@@ -127,9 +121,6 @@ const LoginPage: React.FC = () => {
     }));
   };
 
-  /* ─────────────────────────────────────────────────────────
-     Validation
-  ───────────────────────────────────────────────────────── */
   const validateLoginForm = () => {
     const newErrors: LoginErrorsType = {};
 
@@ -146,20 +137,26 @@ const LoginPage: React.FC = () => {
     return newErrors;
   };
 
-  /* ─────────────────────────────────────────────────────────
-     Submit
-  ───────────────────────────────────────────────────────── */
-const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-  const validationErrors = validateLoginForm();
-  setErrors(validationErrors);
+    const validationErrors = validateLoginForm();
+    setErrors(validationErrors);
 
-  if (Object.keys(validationErrors).length !== 0) {
-    return;
-  }
+    if (Object.keys(validationErrors).length !== 0) {
+      return;
+    }
 
-};
+    if (loginData.remember) {
+      localStorage.setItem("rememberedEmail", loginData.email);
+      localStorage.setItem("rememberMe", "true");
+    } else {
+      localStorage.removeItem("rememberedEmail");
+      localStorage.removeItem("rememberMe");
+    }
+
+    navigate("/pokemon-table");
+  };
 
   return (
     <div className="login-page">
@@ -247,7 +244,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 
               <p className="create-account-text">
                 Don't have an account? <Link to="/signup">Create</Link>
-                </p>
+              </p>
             </form>
           </div>
         </div>
