@@ -2,11 +2,77 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class PokemonController extends Controller
 {
+    public function index()
+    {
+        $pokemonList = DB::select('
+            SELECT 
+                p.id,
+                p.name,
+                s.link AS sprites,
+
+                st.hp,
+                st.attack,
+                st.defense,
+                st.sp_atk,
+                st.sp_def,
+                st.speed
+
+            FROM pokemon p
+            LEFT JOIN sprites s ON p.id = s.id
+            LEFT JOIN stats st  ON p.id = st.id
+
+            ORDER BY p.id
+        ');
+
+        $typesRaw = DB::select('
+            SELECT 
+                pt.poke_id,
+                t.name,
+                pt.slot
+            FROM pokemon_type pt
+            JOIN type t ON pt.type_id = t.id
+        ');
+
+        $typesGrouped = [];
+
+        foreach ($typesRaw as $t) {
+            $typesGrouped[$t->poke_id][] = [
+                'name' => $t->name,
+                'slot' => $t->slot
+            ];
+        }
+
+        $response = array_map(function ($p) use ($typesGrouped) {
+
+            $types = $typesGrouped[$p->id] ?? [];
+
+            usort($types, fn($a, $b) => $a['slot'] <=> $b['slot']);
+
+            return [
+                'id'      => (int) $p->id,
+                'name'    => $p->name,
+                'sprites' => $p->sprites,
+
+                'types'   => array_column($types, 'name'),
+
+                'stats' => [
+                    'hp'      => $p->hp,
+                    'attack'  => $p->attack,
+                    'defense' => $p->defense,
+                    'sp_atk'  => $p->sp_atk,
+                    'sp_def'  => $p->sp_def,
+                    'speed'   => $p->speed,
+                ]
+            ];
+        }, $pokemonList);
+
+        return response()->json($response);
+    }
+
     public function show(string $id)
     {
         $pokemonData = DB::select('
@@ -15,6 +81,7 @@ class PokemonController extends Controller
                 pokedex_entry.flavour_text,
                 growth_rates.name AS growth_rate,
                 habitats.name AS habitat,
+                sprites.link AS sprites,
 
                 stats.hp,
                 stats.attack,
@@ -33,6 +100,9 @@ class PokemonController extends Controller
 
             JOIN habitats      
                 ON pokemon.habitat_id = habitats.id
+
+            JOIN sprites      
+                ON pokemon.id = sprites.id
 
             LEFT JOIN stats
                 ON pokemon.id = stats.id
@@ -181,6 +251,7 @@ class PokemonController extends Controller
             'growth_rate'  => $pokemon->growth_rate,
             'habitat'      => $pokemon->habitat,
             'gender_ratio' => $pokemon->gender_ratio,
+            'sprites'      => $pokemon->sprites,
 
             'types'        => $typesFormatted,
             'abilities'    => $abilitiesFormatted,
